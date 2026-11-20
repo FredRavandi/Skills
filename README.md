@@ -6,7 +6,7 @@ A collection of [Agent Skills](https://agentskills.io) for Claude Code and other
 
 | Skill | What it does |
 |---|---|
-| [code-health-audit](skills/code-health-audit/) | Read-only, evidence-based audit of code health and quality-gate integrity across six dimensions: hygiene & types, duplication & dead code, code smells, coupling & architecture, gate integrity (weakened tests, new suppressions, masked CI failures) and quality-gate engineering. Includes `git diff` triage commands and a report template. |
+| [code-health-audit](skills/code-health-audit/) | Read-only, evidence-based audit of code health and quality-gate integrity across seven dimensions: hygiene & types, duplication & dead code, code smells, coupling & architecture (including change coupling from git history), gate integrity (weakened tests, new suppressions, masked CI failures, unverified new dependencies), quality-gate engineering, and test effectiveness (tautological tests, mutation testing). Includes bash triage commands and a report template. |
 
 ## Install
 

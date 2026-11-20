@@ -3,18 +3,25 @@
 Turn recurring review feedback into enforceable, progressively stricter repository policy.
 
 ## In audit mode
-Evaluate the gates that already exist; do not design or add new ones.
+Evaluate the gates and loops that already exist; do not design or add new ones.
 - List each check, the loop it runs in (inner/middle/outer), and whether it blocks on failure or only reports.
 - Identify checks that are configured but never run, run but never block, or run in a loop too late or too expensive for their purpose.
+- Check whether an agent can declare work complete while checks fail, or whether a completion gate stops it (see Middle loop).
+- Check whether an independent adversarial review runs before release (see Middle loop). Record who or what performs it and whether its findings block.
+- Check whether the feedback loops exist (see Feedback loops). Do production errors reach new tests or gates? Is the harness reviewed on a schedule? Look for evidence: issue links in tests, incident references, review notes, changelogs of gate changes. Record "no evidence in the repository" rather than "absent" when the process may live elsewhere.
 - Compare the most frequent review findings (from this audit, PR history or the user) with the automated checks. Report each measurable, recurring failure that has no gate as an Info or Medium finding.
 - Note whether a baseline exists, whether it is protected, and whether it is ratcheting or static.
 
-## Three loops
-1. **Inner loop (after each edit):** formatter, linter, type checker, targeted tests and cheap banned-pattern/suppression checks. Fast, exact diagnostics so the agent can correct its own change; no broad or flaky scans.
-2. **Middle loop (before work is declared complete):** relevant tests, changed-code complexity and clone detection, dead-code analysis with dynamic-use safeguards, and architecture checks.
-3. **Outer loop (PR/CI):** complete required test suite, trusted-policy evaluation, security/dependency checks, test-removal and gate-integrity checks, and baseline comparison.
+## Three delivery loops
+1. **Inner loop (after each edit):** formatter, linter, build or type checker, targeted tests and cheap banned-pattern/suppression checks. Fast, exact diagnostics so the agent can correct its own change; no broad or flaky scans.
+2. **Middle loop (before work is declared complete):** relevant tests, changed-code complexity and clone detection, dead-code analysis with dynamic-use safeguards, architecture-rule checks and tautological-test checks. Where the host supports it, wire these to the agent's completion event (for example a stop hook) so the agent cannot finish while they fail. Add an adversarial review: a separate agent or human given the diff and the trusted policy, and asked to find failures rather than confirm success. It supplements deterministic checks; it does not replace them.
+3. **Outer loop (PR/CI):** complete required test suite, trusted-policy evaluation, mutation testing on changed code, security and new-dependency checks, test-removal and gate-integrity checks, and baseline comparison.
 
 Run each check in the earliest loop where it is reliable and affordable. Expensive or noisy checks belong later unless risk justifies earlier execution.
+
+## Feedback loops
+1. **Production feedback:** production errors, incidents and escaped defects become regression tests or new gates, with a link back to the incident. Without this loop the gates only catch defects someone predicted.
+2. **Observation (periodic, for example weekly):** review gate results, false positives, new suppressions and exceptions, agent workarounds and recurring review comments. Tune the harness from what you find: add a gate, tighten a ratchet, fix a noisy rule. Changes go through the same protected review as any other policy change.
 
 ## Deterministic backpressure
 - Prefer executable checks with stable inputs, pinned versions and machine-readable results.
@@ -32,11 +39,18 @@ Run each check in the earliest loop where it is reliable and affordable. Expensi
 - Convert a repeated human review comment into a measurable rule only when the rule captures the underlying risk without creating perverse incentives.
 
 ## Goodhart safeguards
-Metrics can be gamed. Pair counts with review of intent and impact. Watch for artificial function splitting, meaningless wrappers, exclusion growth, suppression growth, assertion removal and complexity-threshold changes. Never optimise a score at the expense of correctness, clarity or system understanding.
+Metrics can be gamed. Pair counts with review of intent and impact. Watch for:
+- artificial function splitting and meaningless wrappers;
+- exclusion growth, suppression growth and threshold changes;
+- assertion removal, and assertion inflation with tautological or trivial assertions;
+- mutation-testing exclusions, disabled mutators or shortened timeouts;
+- an agent editing the rules, thresholds or baselines that judge its own work.
+
+Never optimise a score at the expense of correctness, clarity or system understanding.
 
 ## Minimum practical rollout
 1. Identify the most frequent, measurable review failure.
 2. Add one fast local gate and one required CI gate using the same trusted rule.
 3. Baseline legacy violations and block new ones.
 4. Protect the rule/configuration and require human review for changes.
-5. Review false positives and developer friction, then ratchet gradually.
+5. Review false positives and developer friction on a fixed schedule (the observation loop), then ratchet gradually.

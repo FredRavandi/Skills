@@ -4,6 +4,7 @@
 - Overall assessment:
 - Highest-priority risk:
 - Gate integrity: Intact / At risk / Weakened / Not assessed
+- Test effectiveness: Demonstrated / Weak / Unknown / Not assessed
 
 ## Scope and trust basis
 - Repository:
@@ -22,6 +23,7 @@
 | 4 | Coupling & architecture | | | |
 | 5 | Gate integrity | | | |
 | 6 | Quality-gate engineering | | | |
+| 7 | Test effectiveness | | | |
 
 ## Deterministic checks
 | Check | Tool/version | Command | Scope | Exit code | Result | Notes |
@@ -38,7 +40,7 @@ For each finding:
 
 ### [ID] [Severity] Short title
 - **Confidence:** Confirmed / Likely / Conjectural
-- **Category:** Hygiene & Types / Duplication & Dead Code / Code Smells / Coupling & Architecture / Gate Integrity / Quality-Gate Engineering
+- **Category:** Hygiene & types / Duplication & dead code / Code smells / Coupling & architecture / Gate integrity / Quality-gate engineering / Test effectiveness
 - **Evidence:** `path/to/file.ext:line-line`, diff, command output or reproducible path
 - **Rule:** The measurable standard or design principle
 - **Impact:** Why it matters and likely reach
@@ -50,8 +52,26 @@ For each finding:
 - Threshold/configuration changes:
 - Test additions, removals or weakening:
 - CI/hooks/scripts changes:
+- Agent instruction, permission and hook changes:
 - Baseline changes:
+- New dependencies (each checked for use, name, pinning and registry):
+- Preventive controls on rule files (review protection, agent-side protection):
 - Human approvals required:
+
+## Verification loops
+| Loop | Present? | Blocks on failure? | Evidence |
+|---|---|---|---|
+| Inner (after each edit) | | | |
+| Middle (before work is declared complete) | | | |
+| Adversarial review before release | | | |
+| Outer (PR/CI) | | | |
+| Production feedback | | | |
+| Observation (periodic harness review) | | | |
+
+## Test effectiveness
+- Mutation testing: tool/version, scope, score, date of report; or "not configured" / "not run" and why:
+- Tautological or assertion-free tests found:
+- Coverage figure, if available (execution only, not proof of checking):
 
 ## Checks not run
 List each check, the reason, and what evidence remains unavailable.
